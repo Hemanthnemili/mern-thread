@@ -52,7 +52,7 @@ function UserHeader() {
           </Flex>
         </Box>
         <Box>
-          <Avatar name="Mark" src="/zuck-avatar.png" />
+          <Avatar name="Mark" size={"xl"} src="/zuck-avatar.png" />
         </Box>
       </Flex>
 
