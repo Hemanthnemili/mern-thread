@@ -45,10 +45,10 @@ export const signup = async (req, res) => {
         email: newUser.email,
       });
     } else {
-      res.status(404).json({ message: "Invalid user data" });
+      res.status(404).json({ error: "Invalid user data" });
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -58,7 +58,7 @@ export const login = async (req, res) => {
     const user = await User.findOne({ username });
     const isValidPassword = await bcryptjs.compare(password, user?.password);
     if (!user || !isValidPassword)
-      return res.status(403).json({ message: "Invalid username or Password" });
+      return res.status(403).json({ error: "Invalid username or Password" });
 
     genTokenAndCookie(user._id, res);
 
@@ -69,7 +69,7 @@ export const login = async (req, res) => {
       email: user.email,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -78,7 +78,7 @@ export const logout = (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.status(200).json({ message: "User logged out successfully." });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -94,7 +94,7 @@ export const follow = async (req, res) => {
         .json({ message: "You cannot follow or un follow yourself" });
 
     if (!userToModify || !currentUser)
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ error: "User not found" });
 
     const isFollowing = currentUser.following.includes(id);
 
@@ -118,7 +118,7 @@ export const update = async (req, res) => {
   const userId = req.user._id;
   try {
     let user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     if (req.params.id !== userId.toString())
       return res
