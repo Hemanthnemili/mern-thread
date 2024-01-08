@@ -2,6 +2,8 @@ import bcryptjs from "bcryptjs";
 import User from "../models/user.modal.js";
 import genTokenAndCookie from "../utils/genTokenAndCookie.js";
 
+import { v2 as cloudinary } from "cloudinary";
+
 export const test = (req, res) => {
   res.status(200).json({ message: "Server is active" });
 };
@@ -41,8 +43,10 @@ export const signup = async (req, res) => {
       res.status(200).json({
         _id: newUser._id,
         name: newUser.name,
+        bio: newUser.bio,
         username: newUser.username,
         email: newUser.email,
+        profilePic: newUser.profilePic,
       });
     } else {
       res.status(404).json({ error: "Invalid user data" });
@@ -67,6 +71,8 @@ export const login = async (req, res) => {
       name: user.name,
       username: user.username,
       email: user.email,
+      bio: user.bio,
+      profilePic: user.profilePic,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -114,7 +120,8 @@ export const follow = async (req, res) => {
 };
 
 export const update = async (req, res) => {
-  const { name, email, username, password, profilePic, bio } = req.body;
+  const { name, email, username, password, bio } = req.body;
+  let { profilePic } = req.body;
   const userId = req.user._id;
   try {
     let user = await User.findById(userId);
@@ -129,6 +136,16 @@ export const update = async (req, res) => {
       const salt = await bcryptjs.genSalt(10);
       const hashedPassword = await bcryptjs.hash(password, salt);
       user.password = hashedPassword;
+    }
+
+    if (profilePic) {
+      if (user.profilePic) {
+        await cloudinary.uploader.destroy(
+          user.profilePic.split("/").pop().split(".")[0]
+        );
+      }
+      const uploadedResponse = await cloudinary.uploader.upload(profilePic);
+      profilePic = uploadedResponse.secure_url;
     }
 
     (user.name = name || user.name),

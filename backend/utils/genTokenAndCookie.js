@@ -6,9 +6,8 @@ const genTokenAndCookie = (userId, res) => {
   });
 
   res.cookie("jwt", token, {
+    maxAge: 9000,
     httpOnly: true,
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-    sameSite: "strict",
   });
 
   return token;

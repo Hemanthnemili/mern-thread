@@ -18,6 +18,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/follow/:id", protectRoute, follow);
-router.post("/update/:id", protectRoute, update);
+router.put("/update/:id", protectRoute, update);
 
 export default router;
