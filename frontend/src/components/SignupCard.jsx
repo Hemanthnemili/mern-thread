@@ -20,12 +20,14 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
 import { useNavigate } from "react-router-dom";
+import userAtom from "../atoms/userAtom";
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [formData, setFormData] = useState({});
   let toast = useToast();
+  const setUser = useSetRecoilState(userAtom);
   const navigate = useNavigate();
 
   console.log(formData);
@@ -52,6 +54,7 @@ export default function SignupCard() {
       }
 
       localStorage.setItem("user-threads", JSON.stringify(data));
+      setUser(data);
       toast({
         title: "Success",
         description: "Account has been successfully created.",

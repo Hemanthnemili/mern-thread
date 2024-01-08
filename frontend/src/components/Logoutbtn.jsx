@@ -4,6 +4,7 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useNavigate } from "react-router-dom";
+import { HiLogout } from "react-icons/hi";
 
 function Logoutbtn() {
   const setUser = useSetRecoilState(userAtom);
@@ -52,8 +53,10 @@ function Logoutbtn() {
         right={"30px"}
         size={"sm"}
         onClick={handleLogout}
+        color={"yellow"}
+        cursor={"pointer"}
       >
-        Logout
+        <HiLogout />
       </Button>
     </>
   );

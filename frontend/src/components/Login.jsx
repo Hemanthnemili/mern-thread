@@ -17,10 +17,54 @@ import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
+import useShowToast from "../hooks/useShowToast";
+import { useNavigate } from "react-router-dom";
+import userAtom from "../atoms/userAtom";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const setAuuthScreen = useSetRecoilState(authScreenAtom);
+  const [formData, setFormData] = useState({});
+  const showToast = useShowToast();
+  const setUser = useSetRecoilState(userAtom);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  console.log(formData);
+
+  const handleLogin = async () => {
+    try {
+      const res = await fetch("http://localhost:9696/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      console.log(data);
+
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+
+      localStorage.setItem("user-threads", JSON.stringify(data));
+      setUser(data);
+      showToast("Success", "You have logged in successfully", "success");
+      navigate("/");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <Flex minH={"100vh"} align={"center"} justify={"center"}>
@@ -39,12 +83,16 @@ export default function Login() {
           <Stack spacing={4}>
             <FormControl isRequired>
               <FormLabel>Username</FormLabel>
-              <Input type="text" />
+              <Input type="text" id="username" onChange={handleChange} />
             </FormControl>
             <FormControl isRequired>
               <FormLabel>Password</FormLabel>
               <InputGroup>
-                <Input type={showPassword ? "text" : "password"} />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  onChange={handleChange}
+                />
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}
@@ -67,6 +115,7 @@ export default function Login() {
                   bg: "white",
                   color: "black",
                 }}
+                onClick={handleLogin}
               >
                 Login
               </Button>
