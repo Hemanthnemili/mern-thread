@@ -33,13 +33,17 @@ export default function SignupCard() {
   console.log(formData);
   const handleSignUp = async () => {
     try {
-      const res = await fetch("http://localhost:9696/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        "/api/user/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+        { withCredentials: true }
+      );
       const data = await res.json();
 
       if (data.error) {

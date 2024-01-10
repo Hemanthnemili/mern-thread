@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
 import User from "../models/user.modal.js";
 import genTokenAndCookie from "../utils/genTokenAndCookie.js";
-
+import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 
 export const test = (req, res) => {

@@ -12,7 +12,7 @@ function Logoutbtn() {
   const navigate = useNavigate();
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:9696/user/logout", {
+      const res = await fetch("/api/user/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

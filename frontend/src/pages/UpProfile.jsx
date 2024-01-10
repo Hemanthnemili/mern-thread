@@ -19,12 +19,10 @@ export default function UserProfileEdit() {
   const [user, setUser] = useRecoilState(userAtom);
   const showToast = useShowToast();
 
-  showToast;
-
   console.log(user);
   const [inputs, setInputs] = useState({
     name: user.name,
-    usernmae: user.username,
+    username: user.username,
     email: user.email,
     bio: user.bio,
     profilePic: user.profilePic,
@@ -38,7 +36,7 @@ export default function UserProfileEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:9696/user/update/${user._id}`, {
+      const res = await fetch(`/api/user/update/${user._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -48,10 +46,14 @@ export default function UserProfileEdit() {
       const data = await res.json();
       console.log(data);
 
-      // if(data.error){
-      //   showToast('Error', data.error, 'error');
-      //   return
-      // }
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+
+      showToast("Success", "Updated user", "success");
+      setUser(data);
+      localStorage.setItem("user-threads", JSON.stringify(data));
     } catch (error) {
       showToast("Error", error.message, "error");
     }
@@ -91,13 +93,13 @@ export default function UserProfileEdit() {
               </Center>
             </Stack>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Username</FormLabel>
             <Input
               placeholder="User Name"
               _placeholder={{ color: "gray.500" }}
               type="text"
-              value={user.username}
+              value={inputs.username}
               onChange={(e) =>
                 setInputs({ ...inputs, username: e.target.value })
               }
@@ -111,7 +113,7 @@ export default function UserProfileEdit() {
               _placeholder={{ color: "gray.500" }}
               type="text"
               id="fullname"
-              value={user.name}
+              value={inputs.name}
               onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
             />
           </FormControl>
@@ -122,7 +124,7 @@ export default function UserProfileEdit() {
               placeholder="bio"
               _placeholder={{ color: "gray.500" }}
               type="text"
-              value={user.bio}
+              value={inputs.bio}
               id="bio"
               onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
             />
@@ -135,7 +137,7 @@ export default function UserProfileEdit() {
               _placeholder={{ color: "gray.500" }}
               type="email"
               id="email"
-              value={user.email}
+              value={inputs.email}
               onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
             />
           </FormControl>
