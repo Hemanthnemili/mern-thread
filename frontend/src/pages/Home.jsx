@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 function Home() {
   return (
-    <Link to={"/hemanth"}>
+    <Link to={`/:username`}>
       <Flex w={"full"} justifyContent={"center"}>
         <Button mx={"auto"}>Visit profile page</Button>
       </Flex>

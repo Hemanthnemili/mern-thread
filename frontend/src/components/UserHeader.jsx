@@ -11,13 +11,29 @@ import {
   Portal,
   MenuList,
   MenuItem,
-  useToast,
+  Button,
 } from "@chakra-ui/react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
+import useShowToast from "../hooks/useShowToast";
+import { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 function UserHeader({ user }) {
-  const toast = useToast();
+  const toast = useShowToast();
+
+  const currentUser = useRecoilValue(userAtom); // logged in user
+
+  const [following, setFollowing] = useState(
+    user.followers.includes(currentUser._id)
+  );
+
+  const [updating, setUpdating] = useState(false);
+
+  console.log(following);
+
   const copyLink = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
@@ -30,6 +46,42 @@ function UserHeader({ user }) {
       });
     });
     console.log(currentUrl);
+  };
+
+  const followandunfollow = async () => {
+    if (!currentUser) {
+      toast("Error", "Please login to follow", "error");
+      return;
+    }
+    if (updating) return;
+    setUpdating(true);
+    try {
+      const res = await fetch(`/api/user/follow/${user._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (data.error) {
+        toast("Error", data.error, "error");
+        return;
+      }
+
+      if (following) {
+        toast("Success", `Unfollowing ${user.name}`, "success");
+        user.followers.pop();
+      } else {
+        toast("Success", `Following ${user.name}`, "success");
+        user.followers.push(currentUser._id);
+      }
+
+      setFollowing(!following);
+    } catch (error) {
+      toast("Error", error, "error");
+    } finally {
+      setUpdating(false);
+    }
   };
 
   return (
@@ -67,6 +119,19 @@ function UserHeader({ user }) {
       </Flex>
 
       <Text>{user.bio}</Text>
+
+      {currentUser._id === user._id && (
+        <RouterLink to="/update">
+          <Button>Update Profile</Button>
+        </RouterLink>
+      )}
+
+      {currentUser._id !== user._id && (
+        <Button onClick={followandunfollow} isLoading={updating}>
+          {following ? "Unfollow" : "Follow"}
+        </Button>
+      )}
+
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
           <Text color={"gray.light"}>{user.followers.length} followers</Text>
