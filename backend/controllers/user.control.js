@@ -3,17 +3,26 @@ import User from "../models/user.modal.js";
 import genTokenAndCookie from "../utils/genTokenAndCookie.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
+import mongoose from "mongoose";
 
 export const test = (req, res) => {
   res.status(200).json({ message: "Server is active" });
 };
 
 export const profile = async (req, res) => {
-  const { username } = req.params;
+  const { query } = req.params;
   try {
-    const user = await User.findOne({ username })
-      .select("-password")
-      .select("-updatedAt");
+    let user;
+
+    if (mongoose.Types.ObjectId.isValid(query)) {
+      user = await User.findOne({ _id: query })
+        .select("-password")
+        .select("-updatedAt");
+    } else {
+      user = await User.findOne({ username: query })
+        .select("-password")
+        .select("-updatedAt");
+    }
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user);

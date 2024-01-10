@@ -137,7 +137,7 @@ export const getFeedPosts = async (req, res) => {
       createdAt: -1,
     });
 
-    res.status(200).json({ feedPost });
+    res.status(200).json(feedPost);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
