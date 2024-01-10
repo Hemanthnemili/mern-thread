@@ -28,6 +28,7 @@ export default function Login() {
   const showToast = useShowToast();
   const setUser = useSetRecoilState(userAtom);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -39,6 +40,7 @@ export default function Login() {
   console.log(formData);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const res = await fetch(
         "/api/user/login",
@@ -68,6 +70,8 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,6 +125,7 @@ export default function Login() {
                   color: "black",
                 }}
                 onClick={handleLogin}
+                isLoading={loading}
               >
                 Login
               </Button>
