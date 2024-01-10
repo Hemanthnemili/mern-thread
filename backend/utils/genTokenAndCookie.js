@@ -7,7 +7,7 @@ const genTokenAndCookie = (userId, res) => {
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    sameSite: true,
+    sameSite: "strict",
   });
 
   return token;
