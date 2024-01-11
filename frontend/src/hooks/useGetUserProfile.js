@@ -13,7 +13,6 @@ const useGetUserProfile = () => {
       try {
         const res = await fetch(`/api/user/profile/${username}`);
         const data = await res.json();
-        console.log(data);
 
         if (data.error) {
           toast("Error", data.error, "error");

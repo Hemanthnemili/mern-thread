@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
   Box,
   Flex,
@@ -6,7 +7,6 @@ import {
   Button,
   Input,
   FormControl,
-  FormLabel,
 } from "@chakra-ui/react";
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
@@ -31,9 +31,7 @@ const Actions = ({ post: post_ }) => {
   const [isliking, setIsLiking] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [reply, setReply] = useState("");
-  console.log(user);
-  console.log(post);
-  console.log(post_);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleLikeAndUnlike = async () => {
     try {

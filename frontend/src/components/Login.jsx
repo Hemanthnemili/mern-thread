@@ -37,8 +37,6 @@ export default function Login() {
     });
   };
 
-  console.log(formData);
-
   const handleLogin = async () => {
     setLoading(true);
     try {
@@ -56,8 +54,6 @@ export default function Login() {
       );
 
       const data = await res.json();
-
-      console.log(data);
 
       if (data.error) {
         showToast("Error", data.error, "error");

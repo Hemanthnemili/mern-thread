@@ -30,7 +30,6 @@ export default function SignupCard() {
   const setUser = useSetRecoilState(userAtom);
   const navigate = useNavigate();
 
-  console.log(formData);
   const handleSignUp = async () => {
     try {
       const res = await fetch(
@@ -67,7 +66,6 @@ export default function SignupCard() {
         status: "success",
       });
       navigate("/");
-      console.log(data);
     } catch (err) {
       console.log(err);
     }

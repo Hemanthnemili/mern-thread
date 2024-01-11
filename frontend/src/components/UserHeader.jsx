@@ -32,8 +32,6 @@ function UserHeader({ user }) {
 
   const [updating, setUpdating] = useState(false);
 
-  console.log(following);
-
   const copyLink = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
