@@ -1,17 +1,18 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
-import UserPost from "../components/UserPost";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import { Flex, Spinner } from "@chakra-ui/react";
+import Post from "../components/Post";
 
 const UserPage = () => {
   const [user, setUser] = useState(null);
   const { username } = useParams();
   const toast = useShowToast();
   const [loading, setLoading] = useState(true);
-
+  const [posts, setPost] = useState([]);
+  const [fetchingPost, setFetchingPost] = useState(true);
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -31,7 +32,24 @@ const UserPage = () => {
       }
     };
 
+    const getPosts = async () => {
+      setFetchingPost(true);
+      try {
+        const res = await fetch(`/api/post/user/${username}`);
+        const data = await res.json();
+        console.log(data);
+        if (data.error) return toast("Error", data.error, "error");
+        setPost(data);
+      } catch (error) {
+        toast("Error", error, "error");
+        setPost([]);
+      } finally {
+        setFetchingPost(false);
+      }
+    };
+
     getUser();
+    getPosts();
   }, [username, toast]);
 
   if (!user && loading) {
@@ -46,25 +64,17 @@ const UserPage = () => {
   return (
     <>
       <UserHeader user={user} />
-      <UserPost
-        likes={1200}
-        replies={481}
-        postImg="/post1.png"
-        postTitle="Lets talk about threads"
-      />
-      <UserPost
-        likes={128}
-        replies={48}
-        postImg="/post2.png"
-        postTitle="Nice Tutorial"
-      />
-      <UserPost
-        likes={190}
-        replies={81}
-        postImg="/post3.png"
-        postTitle="I love this guy"
-      />
-      <UserPost likes={1700} replies={18} postTitle="Lets talk about threads" />
+
+      {!fetchingPost && posts.length === 0 && <h1>User has no posts</h1>}
+      {fetchingPost && (
+        <Flex justifyContent={"center"} my={12}>
+          <Spinner size={"xl"} />;
+        </Flex>
+      )}
+
+      {posts.map((post) => (
+        <Post key={post._id} post={post} postedBy={post.postedBy} />
+      ))}
     </>
   );
 };

@@ -8,18 +8,22 @@ import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 // eslint-disable-next-line react/prop-types
 function Post({ post, postedBy }) {
   const [user, setUser] = useState(null);
   const toast = useShowToast();
+  const currentUser = useRecoilValue(userAtom);
   const navigate = useNavigate();
   useEffect(() => {
     const getUser = async () => {
       try {
         const res = await fetch("/api/user/profile/" + postedBy);
         const data = await res.json();
-        console.log(data);
+
         if (data.error) {
           toast("Error", data.error, "error");
           return;
@@ -32,9 +36,24 @@ function Post({ post, postedBy }) {
     getUser();
   }, [postedBy, toast]);
 
-  if (!user) return null;
+  const handleDeletePost = async (e) => {
+    try {
+      e.preventDefault();
+      if (!window.confirm("Are you sure you want to delete this post?")) return;
 
-  console.log(user);
+      const res = await fetch(`/api/post/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.error) return toast("Error", data.error, "error");
+      console.log(data);
+      toast("Success", "Post deleted successfully", "success");
+    } catch (error) {
+      toast("Error", error, "error");
+    }
+  };
+
+  if (!user) return null;
 
   return (
     <Link to={`/${user.username}/post/${post._id}`}>
@@ -51,7 +70,7 @@ function Post({ post, postedBy }) {
           />
           <Box w="1px" h={"full"} bg={"gray.light"} my={2}></Box>
           <Box position={"relative"} w={"full"}>
-            {post.replies.length === 0 && <Text textAlign={"center"}>🤣</Text>}
+            {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
             {post.replies[0] && (
               <Avatar
                 size={"xs"}
@@ -114,6 +133,10 @@ function Post({ post, postedBy }) {
               >
                 {formatDistanceToNow(new Date(post.createdAt))} ago
               </Text>
+
+              {currentUser?._id === user._id && (
+                <DeleteIcon size={20} onClick={handleDeletePost} />
+              )}
             </Flex>
           </Flex>
 
@@ -128,17 +151,7 @@ function Post({ post, postedBy }) {
           </Box>
 
           <Flex gap={3} my={1}>
-            <Actions post={post} />
-          </Flex>
-
-          <Flex gap={2} alignItems={"center"}>
-            <Text color={"gray.light"} fontSize={"sm"}>
-              {post.replies.length} replies
-            </Text>
-            <Box w={"1"} h={"1"} borderRadius={"full"} bg={"gray.light"}></Box>
-            <Text fontSize={"sm"} color={"gray.light"}>
-              {post.likes.length} likes
-            </Text>
+            <Actions key={post._id} post={post} />
           </Flex>
         </Flex>
       </Flex>

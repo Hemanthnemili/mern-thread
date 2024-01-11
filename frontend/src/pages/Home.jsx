@@ -29,7 +29,7 @@ function Home() {
       }
     };
     getFeed();
-  }, [toast]);
+  }, [toast, setPost]);
 
   return (
     <>
